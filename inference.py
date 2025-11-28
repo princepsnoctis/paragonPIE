@@ -46,11 +46,11 @@ model = Model(
     num_layers=1
 )
 
-model.load_state_dict(torch.load("model.pt"))
+model.load_state_dict(torch.load("model5.pt"))
 
 model.eval()
 
-sample = "OdbytySpermyWDupsku C 1SZT x1,33 1,33C"
+sample = "PRZYPRAWA D/BIG 20 B 2 x1,59 3,18B"
 
 encoded_sample = torch.tensor(
     name_converter.encode_seq(sample),

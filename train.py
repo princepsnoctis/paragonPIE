@@ -71,7 +71,7 @@ model = Model(
     num_layers=1
 ).to(device)
 
-model.load_state_dict(torch.load("model.pt"))
+model.load_state_dict(torch.load("model4.pt"))
 
 # Loss functions
 def seq_loss(logits, targets, pad_idx):
@@ -208,4 +208,4 @@ for epoch in range(EPOCHS):
 
     print(f"EPOCH {epoch}: loss={avg_loss:.6f}")
 
-torch.save(model.state_dict(), "model2.pt")
+torch.save(model.state_dict(), "model5.pt")
