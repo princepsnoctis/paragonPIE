@@ -1,3 +1,5 @@
+import argparse
+
 import torch
 
 from collator import Collator
@@ -9,7 +11,7 @@ from utils import all_unique_characters_in_csv
 
 
 
-PATH_TO_DATA_CSV = "data/data.csv"
+PATH_TO_DATA_CSV = "data/train.csv"
 MAX_SAM_LEN = 128
 MAX_NAM_LEN = 128
 BATCH_SIZE = 256
@@ -70,8 +72,6 @@ model = Model(
     dropout=0.3,
     num_layers=1
 ).to(device)
-
-model.load_state_dict(torch.load("model4.pt"))
 
 # Loss functions
 def seq_loss(logits, targets, pad_idx):
@@ -152,20 +152,20 @@ for epoch in range(EPOCHS):
         # print("Decoder output: ", name_converter.decode_seq(labels_names[:, 1:][0].tolist()))
         # break
 
-        name_loss = seq_loss(outputs["name_logits"], labels_names[:, 1:], name_converter["<PAD>"])
+        name_loss = seq_loss(outputs["logits--name"], labels_names[:, 1:], name_converter["<PAD>"])
 
-        unit_loss             = cat_loss(outputs["unit_logits"], labels_units)
-        tax_loss              = cat_loss(outputs["tax_logits"], labels_taxes)
+        unit_loss             = cat_loss(outputs["logits--unit"], labels_units)
+        tax_loss              = cat_loss(outputs["logits--tax"], labels_taxes)
 
-        amount_loss           = reg_loss(outputs["amount_pred"], labels_amount_present, labels_amounts)
-        quantity_loss         = reg_loss(outputs["quantity_pred"], labels_quantity_present, labels_quantity)
-        price_loss            = reg_loss(outputs["price_pred"], labels_price_present, labels_price)
-        total_loss            = reg_loss(outputs["total_pred"], labels_total_present, labels_total)
+        amount_loss           = reg_loss(outputs["pred--amount"], labels_amount_present, labels_amounts)
+        quantity_loss         = reg_loss(outputs["pred--quantity"], labels_quantity_present, labels_quantity)
+        price_loss            = reg_loss(outputs["pred--price"], labels_price_present, labels_price)
+        total_loss            = reg_loss(outputs["pred--total"], labels_total_present, labels_total)
 
-        amount_present_loss   = bin_loss(outputs["amount_present_logit"], labels_amount_present)
-        quantity_present_loss = bin_loss(outputs["quantity_present_logit"], labels_quantity_present)
-        price_present_loss    = bin_loss(outputs["price_present_logit"], labels_price_present)
-        total_present_loss    = bin_loss(outputs["total_present_logit"], labels_total_present)
+        amount_present_loss   = bin_loss(outputs["present_logit--amount"], labels_amount_present)
+        quantity_present_loss = bin_loss(outputs["present_logit--quantity"], labels_quantity_present)
+        price_present_loss    = bin_loss(outputs["present_logit--price"], labels_price_present)
+        total_present_loss    = bin_loss(outputs["present_logit--total"], labels_total_present)
 
         # print("###########################################################")
         # print("name_loss:", name_loss)
@@ -209,3 +209,28 @@ for epoch in range(EPOCHS):
     print(f"EPOCH {epoch}: loss={avg_loss:.6f}")
 
 torch.save(model.state_dict(), "model5.pt")
+
+def train(
+    epochs,
+    batch_size,
+    verbose
+):
+    pass
+
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--epochs", type=int, default=100,    help="How many epochs to train for")
+    parser.add_argument("--batch_size", type=int, default=16, help="The size of the batch")
+    parser.add_argument("--verbose", action="store_true",     help="Show progress bar")
+
+    parser.add_argument("--test", action="store_true", help="Test the model")
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    args = parse_args()
+
+    train()
