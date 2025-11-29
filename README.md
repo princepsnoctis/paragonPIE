@@ -11,8 +11,8 @@ This project is self-sufficient, although it builds up on previous two [ParagonO
 The intended pipeline is:
 
 ```mermaid
-flowchart LR
-    A([Image]) --> B[[ParagonOCR]]
+flowchart TB
+    A([Receipt image]) --> B[[ParagonOCR]]
     B --> C([List of lines])
     C --> D[[ParagonNER]]
     D --> E([Line classifications])
@@ -20,5 +20,4 @@ flowchart LR
     F --> G([Product lines])
     G --> H[[ParagonPIE]]
     H --> I([List of product information])
-
 ```
